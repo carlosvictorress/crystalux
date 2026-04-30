@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Crystalux Solutions{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#7399bd',
+                        night: '#000000',
+                        canvas: '#f5f5f7'
+                    },
+                    fontFamily: {
+                        sans: ['"SF Pro Display"', '"Inter"', 'sans-serif'],
+                        display: ['"Lexend Tera"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Lexend+Tera:wght@800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.5s ease; overflow-x: hidden; }
+        
+        /* Cursor HUD */
+        #cursor {
+            width: 8px; height: 8px; background: #7399bd; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 10000; transition: transform 0.1s;
+        }
+
+        /* Customização do Tradutor para não estragar o design */
+        #google_translate_element { display: none; }
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        body { top: 0px !important; }
+
+        /* Estilo do Seletor de Tema */
+        .theme-toggle {
+            width: 44px; height: 22px; background: rgba(255,255,255,0.1);
+            border-radius: 20px; cursor: pointer; position: relative;
+        }
+        .toggle-ball {
+            width: 16px; height: 16px; background: #fff; border-radius: 50%;
+            position: absolute; top: 3px; left: 3px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .light .toggle-ball { transform: translateX(22px); background: #000; }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-night text-white light:bg-canvas light:text-night">
+
+    <div id="cursor" class="hidden md:block"></div>
+
+    <nav class="fixed w-full z-[100] p-6 flex justify-between items-center backdrop-blur-md border-b border-white/5">
+        <a href="index.html" class="flex items-center gap-2 group">
+            <div class="w-6 h-6 bg-brandBlue rounded-full animate-pulse"></div>
+            <span class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-70">Crystalux</span>
+        </a>
+
+        <div class="flex items-center gap-8">
+            <div class="hidden lg:flex gap-8 text-[9px] font-bold tracking-[0.2em] uppercase opacity-40">
+                <a href="Commercial_Cleaning.html" class="hover:text-brandBlue hover:opacity-100 transition">Commercial</a>
+                <a href="Property_Services.html" class="hover:text-brandBlue hover:opacity-100 transition">Property</a>
+                <a href="Residential_Services.html" class="hover:text-brandBlue hover:opacity-100 transition">Residential</a>
+            </div>
+
+            <select onchange="translatePage(this.value)" class="bg-transparent border border-white/10 rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest outline-none">
+                <option value="en">EN</option>
+                <option value="pt">PT</option>
+                <option value="es">ES</option>
+            </select>
+
+            <div class="theme-toggle" id="theme-btn">
+                <div class="toggle-ball"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+        // Tradutor
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+        }
+        function translatePage(lang) {
+            var select = document.querySelector("select.goog-te-combo");
+            if (select) {
+                select.value = lang;
+                select.dispatchEvent(new Event('change'));
+            }
+        }
+
+        // Cursor
+        const cursor = document.getElementById('cursor');
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        });
+
+        // Theme Switch
+        document.getElementById('theme-btn').onclick = () => document.documentElement.classList.toggle('light');
+    </script>
+</body>
+</html>

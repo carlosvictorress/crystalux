@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residential Refinement | Crystalux Solutions</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#7399bd',
+                        night: '#000000',
+                        canvas: '#f5f5f7'
+                    },
+                    fontFamily: {
+                        sans: ['"SF Pro Display"', '"Inter"', 'sans-serif'],
+                        display: ['"Lexend Tera"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Lexend+Tera:wght@800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.5s ease; overflow-x: hidden; }
+        
+        /* Cursor HUD */
+        #cursor {
+            width: 8px; height: 8px; background: #7399bd; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 10000; transition: transform 0.1s;
+        }
+
+        /* Hero Background - Humanized Focus Effect */
+        .hero-visual-wrap {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            background: #000;
+        }
+
+        .hero-bg-base {
+            position: absolute;
+            inset: 0;
+            background-image: url('img/pessoas.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            filter: saturate(0.5) contrast(1.2);
+        }
+
+        .hero-focus-layer {
+            position: absolute;
+            inset: 0;
+            background-image: url('img/pessoas.png');
+            background-size: cover;
+            background-position: center;
+            /* Máscara radial que revela a versão "viva" da imagem */
+            -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 45%);
+            mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 45%);
+            opacity: 0.8;
+            filter: saturate(1) contrast(1);
+        }
+
+        /* Glassmorphism de Alto Contraste */
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .light .apple-glass {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Seção Inclinada */
+        .slanted-bg {
+            position: relative;
+            background: #7399bd;
+            padding: 12rem 0;
+            clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);
+            margin: -6rem 0;
+        }
+
+        /* Blueprint Grid Dinâmico */
+        .blueprint-bg {
+            position: absolute; inset: 0;
+            background-image: 
+                linear-gradient(rgba(115, 153, 189, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(115, 153, 189, 0.08) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: -1;
+            mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 60%);
+        }
+
+        .text-gradient {
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .light .text-gradient {
+            background: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.6) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 44px; height: 22px; background: rgba(255,255,255,0.1);
+            border-radius: 20px; cursor: pointer; position: relative;
+        }
+        .toggle-ball {
+            width: 16px; height: 16px; background: #fff; border-radius: 50%;
+            position: absolute; top: 3px; left: 3px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .light .toggle-ball { transform: translateX(22px); background: #000; }
+
+        /* Translator Hides */
+        #google_translate_element { display: none; }
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        body { top: 0px !important; }
+
+        .fade-in { opacity: 0; transform: translateY(40px); }
+        .slide-in-left { opacity: 0; transform: translateX(-100px); }
+    </style>
+</head>
+<body class="bg-night text-white light:bg-canvas light:text-night">
+
+    <div id="cursor" class="hidden md:block"></div>
+
+    <nav class="fixed w-full z-[100] p-6 flex justify-between items-center backdrop-blur-md border-b border-white/5">
+        <a href="index.html" class="flex items-center gap-2 group">
+            <div class="w-6 h-6 bg-brandBlue rounded-full animate-pulse"></div>
+            <span class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-70">Crystalux</span>
+        </a>
+
+        <div class="flex items-center gap-8">
+            <div class="hidden lg:flex gap-8 text-[9px] font-bold tracking-[0.2em] uppercase opacity-40">
+                <a href="Commercial_Cleaning.html" class="hover:text-brandBlue hover:opacity-100 transition">Commercial</a>
+                <a href="Property_Services.html" class="hover:text-brandBlue hover:opacity-100 transition">Property</a>
+                <a href="Residential_Services.html" class="text-brandBlue opacity-100 transition">Residential</a>
+            </div>
+
+            <select onchange="translatePage(this.value)" class="bg-transparent border border-white/10 rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest outline-none cursor-pointer">
+                <option value="en">EN</option>
+                <option value="pt">PT</option>
+                <option value="es">ES</option>
+            </select>
+
+            <div class="theme-toggle" id="theme-btn">
+                <div class="toggle-ball"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="min-h-screen flex flex-col justify-center px-6 relative overflow-hidden" id="hero-section">
+            <div class="hero-visual-wrap">
+                <div class="hero-bg-base"></div>
+                <div class="hero-focus-layer" id="human-focus"></div>
+            </div>
+
+            <div class="blueprint-bg" id="grid"></div>
+            
+            <div class="max-w-6xl mx-auto w-full text-center space-y-8 relative z-10">
+                <h1 class="text-6xl md:text-[100px] font-semibold tracking-tight leading-none text-gradient slide-in-left" id="main-title">
+                    Residential <br> <span class="text-brandBlue italic">Refinement.</span>
+                </h1>
+                <p class="text-lg md:text-xl font-light opacity-60 max-w-2xl mx-auto leading-relaxed fade-in">
+                    Delivering consistency, reliability, and attention to detail through expert painting and planned renovations across the United States.
+                </p>
+            </div>
+        </section>
+
+        <section class="slanted-bg">
+            <div class="max-w-7xl mx-auto px-6 py-20">
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="apple-glass p-12 rounded-[40px] space-y-6 fade-in service-card">
+                        <div class="text-3xl text-brandBlue">🎨</div>
+                        <h4 class="font-display italic text-lg text-white light:text-night uppercase tracking-tighter">Painting</h4>
+                        <p class="text-xs text-white/80 light:text-night/70 leading-relaxed font-light">Flawless finishes for walls, ceilings, and trims with high-quality materials.</p>
+                        <div class="pt-4"><div class="w-12 h-[1px] bg-brandBlue"></div></div>
+                    </div>
+
+                    <div class="apple-glass p-12 rounded-[40px] space-y-6 fade-in service-card">
+                        <div class="text-3xl text-brandBlue">📐</div>
+                        <h4 class="font-display italic text-lg text-white light:text-night uppercase tracking-tighter">Baseboards</h4>
+                        <p class="text-xs text-white/80 light:text-night/70 leading-relaxed font-light">Expert installation of window casings, crown moldings, and baseboards.</p>
+                        <div class="pt-4"><div class="w-12 h-[1px] bg-brandBlue"></div></div>
+                    </div>
+
+                    <div class="apple-glass p-12 rounded-[40px] space-y-6 fade-in service-card">
+                        <div class="text-3xl text-brandBlue">🚪</div>
+                        <h4 class="font-display italic text-lg text-white light:text-night uppercase tracking-tighter">Doors</h4>
+                        <p class="text-xs text-white/80 light:text-night/70 leading-relaxed font-light">Professional hanging of interior doors, hardware, and perfect alignment.</p>
+                        <div class="pt-4"><div class="w-12 h-[1px] bg-brandBlue"></div></div>
+                    </div>
+
+                    <div class="apple-glass p-12 rounded-[40px] space-y-6 fade-in service-card">
+                        <div class="text-3xl text-brandBlue">✨</div>
+                        <h4 class="font-display italic text-lg text-white light:text-night uppercase tracking-tighter">Renovations</h4>
+                        <p class="text-xs text-white/80 light:text-night/70 leading-relaxed font-light">Small to medium-scale interior upgrades and high-end property repairs.</p>
+                        <div class="pt-4"><div class="w-12 h-[1px] bg-brandBlue"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-40 px-6 text-center">
+            <div class="max-w-2xl mx-auto space-y-12 fade-in">
+                <h2 class="text-4xl md:text-6xl font-semibold tracking-tight text-gradient">Start your project.</h2>
+                <div class="flex flex-col md:flex-row gap-6 justify-center">
+                    <a href="https://wa.me/17742449513" class="px-14 py-6 bg-white text-black light:bg-black light:text-white font-bold rounded-full hover:scale-105 transition shadow-2xl uppercase tracking-widest text-[10px]">WhatsApp Inquiry</a>
+                    <a href="mailto:contact@crystaluxsolutions.com" class="px-14 py-6 border border-white/10 light:border-black/10 font-bold rounded-full hover:bg-white/5 transition uppercase tracking-widest text-[10px]">Email Protocol</a>
+                </div>
+            </div>
+            <p class="mt-40 text-[9px] font-bold tracking-[1.5em] uppercase opacity-20">Crystalux Solutions © 2026</p>
+        </section>
+    </main>
+
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+        }
+        function translatePage(lang) {
+            var select = document.querySelector("select.goog-te-combo");
+            if (select) {
+                select.value = lang;
+                select.dispatchEvent(new Event('change'));
+            }
+        }
+
+        const hero = document.getElementById('hero-section');
+        const grid = document.getElementById('grid');
+        const focusLayer = document.getElementById('human-focus');
+        const cursor = document.getElementById('cursor');
+
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+            
+            if(hero) {
+                const rect = hero.getBoundingClientRect();
+                const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+                const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+                
+                // Aplica posição ao grid
+                if(grid) {
+                    grid.style.setProperty('--x', `${xPercent}%`);
+                    grid.style.setProperty('--y', `${yPercent}%`);
+                }
+
+                // Aplica posição ao efeito de foco da imagem (pessoas.PNG)
+                if(focusLayer) {
+                    focusLayer.style.setProperty('--x', `${xPercent}%`);
+                    focusLayer.style.setProperty('--y', `${yPercent}%`);
+                }
+            }
+        });
+
+        gsap.to("#main-title", { x: 0, opacity: 1, duration: 1.8, ease: "expo.out", delay: 0.2 });
+
+        gsap.utils.toArray('.fade-in').forEach(elem => {
+            gsap.to(elem, {
+                scrollTrigger: { trigger: elem, start: "top 90%" },
+                y: 0, opacity: 1, duration: 1.5, ease: "power4.out"
+            });
+        });
+
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const rotateX = (e.clientY - rect.top - rect.height/2) / 12;
+                const rotateY = -(e.clientX - rect.left - rect.width/2) / 12;
+                gsap.to(card, { rotationX: rotateX, rotationY: rotateY, y: -10, duration: 0.4 });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotationX: 0, rotationY: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" });
+            });
+        });
+
+        document.getElementById('theme-btn').onclick = () => document.documentElement.classList.toggle('light');
+    </script>
+</body>
+</html>

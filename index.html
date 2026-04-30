@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystalux | Precision Environments</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#7399bd',
+                        night: '#050505',
+                        ghostly: '#fdfdfd'
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        display: ['"Lexend Tera"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&family=Lexend+Tera:wght@800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.8s ease; overflow-x: hidden; }
+        
+        /* Cursor HUD */
+        #cursor {
+            width: 8px; height: 8px; background: #7399bd; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 10000; transition: transform 0.1s;
+        }
+
+        /* Hero Background Image com efeito de fumaça lateral */
+        .hero-bg-image {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            /* Degradê preto na esquerda (fumaça) suavizando para a imagem à direita */
+            background: linear-gradient(to right, #050505 15%, rgba(5, 5, 5, 0.2) 50%, transparent 80%), url('img/hero.JPEG');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+        }
+
+        /* Ajuste da "fumaça" para o modo Light */
+        .light .hero-bg-image {
+            background: linear-gradient(to right, #fdfdfd 15%, rgba(253, 253, 253, 0.2) 50%, transparent 80%), url('img/hero.JPEG');
+        }
+
+        /* Blueprint & Spotlight */
+        .blueprint-bg {
+            position: absolute; inset: 0;
+            background-image: 
+                linear-gradient(rgba(115, 153, 189, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(115, 153, 189, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px; z-index: -1;
+        }
+        .spotlight {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(115, 153, 189, 0.1) 0%, transparent 40%);
+            z-index: -1; pointer-events: none;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 44px; height: 22px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+            cursor: pointer; position: relative; transition: 0.5s;
+        }
+        .light .theme-toggle { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        .toggle-ball {
+            width: 14px; height: 14px; background: #7399bd; border-radius: 50%;
+            position: absolute; top: 3px; left: 3px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .light .toggle-ball { transform: translateX(22px); background: #050505; }
+
+        /* Cards Perspective */
+        .card-perspective {
+            height: 360px; border-radius: 2rem; overflow: hidden;
+            position: relative; transition: all 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        .card-perspective:hover { transform: translateY(-8px); }
+
+        .service-text {
+            font-family: 'Lexend Tera', sans-serif; font-style: italic;
+            text-transform: uppercase; font-size: 1.4rem; line-height: 1;
+            letter-spacing: 0.05em;
+        }
+
+        .fade-up { opacity: 0; transform: translateY(30px); }
+
+        /* Translator Hides */
+        #google_translate_element { display: none; }
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        body { top: 0px !important; }
+    </style>
+</head>
+<body class="bg-night text-white light:bg-ghostly light:text-night selection:bg-brandBlue">
+
+    <div id="cursor" class="hidden md:block"></div>
+
+    <nav class="fixed w-full z-[100] p-8 flex justify-between items-center backdrop-blur-sm border-b border-white/5">
+        <a href="index.html" class="flex items-center gap-2 group">
+            <div class="w-4 h-4 bg-brandBlue rounded-full animate-pulse"></div>
+            <span class="text-[10px] font-bold tracking-[0.6em] uppercase opacity-60 group-hover:opacity-100 transition">Crystalux</span>
+        </a>
+
+        <div class="flex items-center gap-8">
+            <select onchange="translatePage(this.value)" class="bg-transparent border border-white/10 rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest outline-none cursor-pointer hover:border-brandBlue transition">
+                <option value="en">EN</option>
+                <option value="pt">PT</option>
+                <option value="es">ES</option>
+            </select>
+
+            <div class="theme-toggle" id="theme-btn">
+                <div class="toggle-ball"></div>
+            </div>
+            
+            <a href="mailto:contact@crystaluxsolutions.com" class="hidden md:block text-[9px] font-bold tracking-[0.3em] uppercase opacity-40 hover:opacity-100 transition">Inquiry</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="min-h-[85vh] flex flex-col justify-center px-10 relative overflow-hidden" id="hero-section">
+            <div class="hero-bg-image"></div>
+            
+            <div class="blueprint-bg"></div>
+            <div class="spotlight" id="spotlight"></div>
+            
+            <div class="max-w-4xl z-10 relative">
+                <h1 class="text-5xl md:text-7xl font-extralight tracking-tighter leading-[1.1] fade-up" id="hero-title">
+                    Delivering <br> <span class="italic text-brandBlue">pure excellence.</span>
+                </h1>
+                <p class="mt-8 text-sm md:text-base opacity-40 max-w-sm font-light leading-relaxed fade-up">
+                    Ensuring consistency, reliability, and attention to detail across the United States.
+                </p>
+            </div>
+        </section>
+
+        <section id="services" class="py-12 px-10 max-w-[1300px] mx-auto">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <a href="Commercial_Cleaning.html" class="card-perspective group fade-up">
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800" class="absolute inset-0 w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:scale-110 transition duration-[1.5s]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    <div class="absolute bottom-0 p-8 space-y-4">
+                        <h3 class="service-text">Commercial</h3>
+                        <p class="text-[10px] opacity-40 font-light tracking-widest leading-relaxed">High-performance sanitation for corporate hubs.</p>
+                        <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-brandBlue transition-all duration-500">
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="white" stroke-width="1.2"/></svg>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="Property_Services.html" class="card-perspective bg-brandBlue group fade-up">
+                    <div class="absolute bottom-0 p-8 space-y-4 text-night">
+                        <h3 class="service-text">Property</h3>
+                        <p class="text-[10px] opacity-60 font-light tracking-widest leading-relaxed">Management for premium complexes.</p>
+                        <div class="w-10 h-10 rounded-full border border-night/10 flex items-center justify-center group-hover:bg-white transition-all duration-500">
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="black" stroke-width="1.2"/></svg>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="Residential_Services.html" class="card-perspective group fade-up">
+                    <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800" class="absolute inset-0 w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:scale-110 transition duration-[1.5s]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    <div class="absolute bottom-0 p-8 space-y-4">
+                        <h3 class="service-text">Residential</h3>
+                        <p class="text-[10px] opacity-40 font-light tracking-widest leading-relaxed">Luxury finishing and restoration.</p>
+                        <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-brandBlue transition-all duration-500">
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="white" stroke-width="1.2"/></svg>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section id="about" class="py-32 px-10 max-w-6xl mx-auto border-t border-white/5 light:border-black/5 mt-10">
+            <div class="grid md:grid-cols-2 gap-20 items-start">
+                <div class="space-y-6 fade-up">
+                    <span class="text-brandBlue font-bold text-[10px] tracking-[0.5em] uppercase italic">Our Methodology</span>
+                    <h2 class="text-4xl font-light tracking-tighter leading-none">Not just cleaning. <br> <span class="italic text-brandBlue">Elevation.</span></h2>
+                </div>
+                <div class="space-y-10 fade-up">
+                    <p class="text-xl opacity-50 font-light leading-relaxed">
+                        At Crystalux, we don't just clean; we synchronize elite technology with human excellence to maintain environments that inspire performance.
+                    </p>
+                    <div class="grid grid-cols-2 gap-10 border-t border-white/10 light:border-black/10 pt-10">
+                        <div>
+                            <h4 class="text-brandBlue font-bold text-[10px] tracking-widest uppercase mb-2">Trained Staff</h4>
+                            <p class="text-xs opacity-40">Standardized cleaning protocols for maximum reliability.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-brandBlue font-bold text-[10px] tracking-widest uppercase mb-2">Response Time</h4>
+                            <p class="text-xs opacity-40">Fast communication and dedicated support 24/7.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-20 px-10 text-center border-t border-white/5 light:border-black/5 opacity-30">
+        <span class="text-[9px] font-bold tracking-[1.5em] uppercase">Crystalux Solutions — USA</span>
+    </footer>
+
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Tradutor
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+        }
+        function translatePage(lang) {
+            var select = document.querySelector("select.goog-te-combo");
+            if (select) {
+                select.value = lang;
+                select.dispatchEvent(new Event('change'));
+            }
+        }
+
+        // Spotlight Effect
+        const hero = document.getElementById('hero-section');
+        const spotlight = document.getElementById('spotlight');
+        if (hero && spotlight) {
+            hero.addEventListener('mousemove', (e) => {
+                const rect = hero.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                spotlight.style.setProperty('--x', `${x}%`);
+                spotlight.style.setProperty('--y', `${y}%`);
+            });
+        }
+
+        // Cursor
+        const cursor = document.getElementById('cursor');
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        });
+
+        // Scroll Animations
+        gsap.utils.toArray('.fade-up').forEach(elem => {
+            gsap.to(elem, {
+                scrollTrigger: { trigger: elem, start: "top 90%" },
+                y: 0, opacity: 1, duration: 1.5, ease: "power4.out"
+            });
+        });
+
+        // Theme Toggle
+        document.getElementById('theme-btn').onclick = () => document.documentElement.classList.toggle('light');
+    </script>
+</body>
+</html>
